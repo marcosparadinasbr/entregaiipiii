@@ -1,7 +1,7 @@
 package view;
 import controller.Controller;
 public abstract class BaseView {
-    private Controller controller;
+    protected Controller controller;
     public void setController(Controller controller) {
         this.controller = controller;
     }
