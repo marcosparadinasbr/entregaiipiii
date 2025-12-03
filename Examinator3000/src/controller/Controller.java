@@ -2,6 +2,7 @@ package controller;
 import java.util.ArrayList;
 
 import model.IRepositoryException;
+import model.QuestionBackupIOException;
 import model.Model;
 import model.Question;
 import view.BaseView;
@@ -15,10 +16,10 @@ public class Controller {
         view.setController(this);
     }
     public void start() {
-        // Initialization logic here
+        view.init();
     }
     public void end() {
-        // Cleanup logic here
+        view.end();
     }
     public void addQuestion(Question newQuestion) throws IRepositoryException {
         model.addQuestion(newQuestion);
@@ -31,5 +32,11 @@ public class Controller {
     }
     public void removeQuestion(Question q) throws IRepositoryException {
         model.removeQuestion(q);
+    }
+    public void exportQuestions() throws QuestionBackupIOException, IRepositoryException {
+        model.exportQuestions();
+    }
+    public void importQuestions() throws QuestionBackupIOException {
+        model.importQuestions();
     }
 }

@@ -27,4 +27,10 @@ public class Model {
     public void removeQuestion(Question q) throws IRepositoryException {
         repository.removeQuestion(q);
     }
+    public void exportQuestions() throws QuestionBackupIOException, IRepositoryException {
+        backupHandler.exportQuestions(repository.getAllQuestions());
+    }
+    public void importQuestions() throws QuestionBackupIOException {
+        backupHandler.importQuestions();
+    }
 }

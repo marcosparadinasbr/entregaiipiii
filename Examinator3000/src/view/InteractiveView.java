@@ -2,10 +2,13 @@ package view;
 import static com.coti.tools.Esdia.*;
 
 import java.util.HashSet;
+
+
 import java.util.ArrayList;
 import model.Option;
 import model.Question;
 import model.IRepositoryException;
+import model.QuestionBackupIOException;
 
 public class InteractiveView extends BaseView {
     String[] opciones = {"a)", "b)", "c)", "d)"};
@@ -74,7 +77,7 @@ public class InteractiveView extends BaseView {
         for (int i = 0; i < 4; i++) {
             String optionText = readString("Ingrese el texto de la opción " + opciones[i] + ": ");
             String rationale = readString("Ingrese la justificación de la opción " + opciones[i] + ": ");
-            boolean correct = yesOrNo("¿Es correcta la opción " + opciones[i] + "? (y/n): ");
+            boolean correct = yesOrNo("¿Es correcta la opción " + opciones[i] + "? ");
             options.add(new Option(optionText, rationale, correct));
         }
         Question newQuestion = new Question(author, topics, statement, options);
@@ -139,8 +142,13 @@ public class InteractiveView extends BaseView {
         // Implementación pendiente
     }
     private void exportarPreguntas() {
-        showMessage("Funcionalidad para exportar preguntas.");
-        // Implementación pendiente
+        showMessage("Exportando preguntas...");
+        try {
+            controller.exportQuestions();
+            showMessage("Preguntas exportadas exitosamente.");
+        } catch (QuestionBackupIOException | IRepositoryException e) {
+            showErrorMessage("Error al exportar las preguntas: " + e.getMessage());
+        }
     }
     private void importarPreguntas() {
         showMessage("Funcionalidad para importar preguntas.");

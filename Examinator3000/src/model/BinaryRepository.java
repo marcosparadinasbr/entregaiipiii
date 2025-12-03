@@ -39,6 +39,11 @@ public class BinaryRepository implements IRepository {
     }
     @Override
     public ArrayList<Question> getAllQuestions() throws IRepositoryException {
-        return questions;
+        try {
+            return new ArrayList<>(questions);
+        } catch (Exception e) {
+            throw new IRepositoryException("No se pudieron obtener las preguntas: " + e.getMessage());
+        }
+
     }
 }
