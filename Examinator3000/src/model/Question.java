@@ -1,10 +1,11 @@
 package model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-public class Question {
+public class Question implements Serializable{
     UUID id; // Question identifier
     String author; // Human or AI model
     HashSet<String> topics; // One or more topics

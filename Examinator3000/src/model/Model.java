@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Model {
     IRepository repository;
@@ -32,5 +33,17 @@ public class Model {
     }
     public void importQuestions() throws QuestionBackupIOException {
         backupHandler.importQuestions();
+    }
+
+    public HashSet<String> getAvailableTopics() {
+        return repository.getAvailableTopics();
+    }
+
+    public int getMaxQuestions(String temaSeleccionado) {
+        return repository.getMaxQuestions(temaSeleccionado);
+    }
+
+    public void configureExam(String topic, int numQuestions) {
+        repository.configureExam(topic, numQuestions);
     }
 }

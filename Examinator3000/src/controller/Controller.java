@@ -1,5 +1,6 @@
 package controller;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import model.IRepositoryException;
 import model.QuestionBackupIOException;
@@ -38,5 +39,15 @@ public class Controller {
     }
     public void importQuestions() throws QuestionBackupIOException {
         model.importQuestions();
+    }
+    public HashSet<String> startExamMode() {
+        return model.getAvailableTopics();
+    }
+    public int topicSelected(String temaSeleccionado) {
+        return model.getMaxQuestions(temaSeleccionado);
+    }
+    public void numQuestionsSelected(String temaSeleccionado, int numQuestions) {
+        model.configureExam(temaSeleccionado, numQuestions);
+        
     }
 }

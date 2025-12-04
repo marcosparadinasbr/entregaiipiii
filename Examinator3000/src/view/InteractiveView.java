@@ -14,6 +14,9 @@ public class InteractiveView extends BaseView {
     String[] opciones = {"a)", "b)", "c)", "d)"};
     ArrayList<Question> preguntas;
     public void init() {
+        showMenu();
+    }
+    public void showMenu() {
         boolean salir = false;
         int option;
         do {
@@ -138,8 +141,25 @@ public class InteractiveView extends BaseView {
         // Implementación pendiente
     }
     private void modoExamen() {
-        showMessage("Funcionalidad para modo examen.");
-        // Implementación pendiente
+        HashSet<String> temasDisponibles;
+        temasDisponibles = controller.startExamMode();
+        showMessage("Temas disponibles para el examen:");
+        for (String tema : temasDisponibles) {
+            showMessage("- " + tema);
+        }
+        String temaSeleccionado = readString("Seleccione un tema de los anteriores o elija la opción todos: ");
+        if (temaSeleccionado.equalsIgnoreCase("todos")) {
+            showMessage("Ha seleccionado todos los temas.");
+        } else if (temasDisponibles.contains(temaSeleccionado.toUpperCase())) {
+            showMessage("Ha seleccionado el tema: " + temaSeleccionado);
+        } else {
+            showErrorMessage("Tema no válido. Volviendo al menú principal.");
+            return;
+        }
+        int maxQuestions = controller.topicSelected(temaSeleccionado);
+        int numPreguntas = readInt("Ingrese el número de preguntas para el examen: ", 1, maxQuestions);
+        controller.numQuestionsSelected(temaSeleccionado, numPreguntas);
+        
     }
     private void exportarPreguntas() {
         showMessage("Exportando preguntas...");
@@ -151,8 +171,12 @@ public class InteractiveView extends BaseView {
         }
     }
     private void importarPreguntas() {
-        showMessage("Funcionalidad para importar preguntas.");
-        // Implementación pendiente
+        try {
+            controller.importQuestions();
+            showMessage("Preguntas importadas exitosamente.");
+        } catch (QuestionBackupIOException e) {
+            showErrorMessage("Error al importar las preguntas: " + e.getMessage());
+        }
     }
     private void modificarPregunta(Question q) {
         String author = readString("Ingrese el nuevo autor de la pregunta: ");
