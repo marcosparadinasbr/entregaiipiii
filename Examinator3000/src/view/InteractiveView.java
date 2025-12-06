@@ -2,17 +2,20 @@ package view;
 import static com.coti.tools.Esdia.*;
 
 import java.util.HashSet;
-
-
+import java.util.List;
 import java.util.ArrayList;
 import model.Option;
 import model.Question;
+import model.ExamResult;
 import model.IRepositoryException;
 import model.QuestionBackupIOException;
+import model.QuestionCreator;
+import model.QuestionCreatorException;
 
 public class InteractiveView extends BaseView {
     String[] opciones = {"a)", "b)", "c)", "d)"};
     ArrayList<Question> preguntas;
+    private HashSet<String> temasDisponibles;
     public void init() {
         showMenu();
     }
@@ -137,17 +140,26 @@ public class InteractiveView extends BaseView {
         }
     }
     private void crearPreguntaAutomaticamente() {
-        showMessage("Funcionalidad para crear una pregunta automáticamente.");
-        // Implementación pendiente
+        try {
+            String topic = readString("Ingrese el tema para la pregunta automática: ");
+            showMessage("Creando pregunta automáticamente...");
+            controller.crearPreguntaAutomaticamente(topic);
+            showMessage("Pregunta creada y añadida al repositorio exitosamente.");
+        } catch (QuestionCreatorException e) {
+            showErrorMessage("Error al crear la pregunta automáticamente: " + e.getMessage());
+        }
     }
     private void modoExamen() {
-        HashSet<String> temasDisponibles;
-        temasDisponibles = controller.startExamMode();
-        showMessage("Temas disponibles para el examen:");
-        for (String tema : temasDisponibles) {
-            showMessage("- " + tema);
+        controller.startExamMode();
+    }
+    public void showTopics(HashSet<String> topics) {
+        this.temasDisponibles=topics;
+        showMessage("Temas disponibles:");
+        for (String topic : temasDisponibles) {
+            showMessage("- " + topic);
         }
-        String temaSeleccionado = readString("Seleccione un tema de los anteriores o elija la opción todos: ");
+        showMessage("- TODOS");
+        String temaSeleccionado = readString("Seleccione un tema de los anteriores o elija la opción TODOS: ");
         if (temaSeleccionado.equalsIgnoreCase("todos")) {
             showMessage("Ha seleccionado todos los temas.");
         } else if (temasDisponibles.contains(temaSeleccionado.toUpperCase())) {
@@ -156,10 +168,49 @@ public class InteractiveView extends BaseView {
             showErrorMessage("Tema no válido. Volviendo al menú principal.");
             return;
         }
-        int maxQuestions = controller.topicSelected(temaSeleccionado);
-        int numPreguntas = readInt("Ingrese el número de preguntas para el examen: ", 1, maxQuestions);
-        controller.numQuestionsSelected(temaSeleccionado, numPreguntas);
-        
+        controller.topicSelected(temaSeleccionado);
+    }
+    public void askNumQuestions(int maxQuestions) {
+        if (maxQuestions == 0) {
+            showErrorMessage("No hay preguntas disponibles para el tema seleccionado. Volviendo al menú principal.");
+            return;
+        }
+        int numPreguntas = readInt("Ingrese el número de preguntas para el examen (máximo " + maxQuestions + "): ", 1, maxQuestions);
+        controller.numQuestionsSelected(numPreguntas);
+    }
+    public void showQuestion(Question q) {
+        int questionNumber = 0;
+        questionNumber = questionNumber + 1;
+        showMessage("Pregunta " + questionNumber + ":");
+        showMessage("Enunciado: " + q.getStatement());
+        ArrayList<Option> opts = (ArrayList<Option>) q.getOptions();
+        for (int j = 0; j < opts.size(); j++) {
+            Option opt = opts.get(j);
+            showMessage(opciones[j] + " " + opt.getText());
+        }
+    }
+    public int getUserAnswer() {
+        String respuesta = readString("Ingrese la letra de su respuesta (a, b, c, d) o presione Enter para omitir: ");
+        int answerIndex = -1;
+        if (!respuesta.isEmpty()) {
+            switch (respuesta.toLowerCase()) {
+                case "a":
+                    answerIndex = 0;
+                    break;
+                case "b":
+                    answerIndex = 1;
+                    break;
+                case "c":
+                    answerIndex = 2;
+                    break;
+                case "d":
+                    answerIndex = 3;
+                    break;
+                default:
+                    showErrorMessage("Respuesta no válida. Se considerará como omitida.");
+            }
+        }
+        return answerIndex;
     }
     private void exportarPreguntas() {
         showMessage("Exportando preguntas...");
@@ -170,11 +221,29 @@ public class InteractiveView extends BaseView {
             showErrorMessage("Error al exportar las preguntas: " + e.getMessage());
         }
     }
+    public void showFeedback(int result) {
+        if (result == 1) {
+            showMessage("Respuesta correcta.");
+        } else if (result == -1) {
+            showMessage("Respuesta incorrecta.");
+        } else {
+            showMessage("Pregunta omitida.");
+        }
+    }
+    public void showExamResult(ExamResult result) {
+        showMessage("Resultado del examen:");
+        showMessage("Correctas: " + result.getCorrect());
+        showMessage("Incorrectas: " + result.getWrong());
+        showMessage("Omitidas: " + result.getSkipped());
+        showMessage("Total de preguntas: " + result.getTotal());
+        showMessage("Tiempo empleado (s): " + result.getTimeMillis() / 1000);
+        showMessage("Nota final: " + String.format("%.2f", result.getGrade()));
+    }
     private void importarPreguntas() {
         try {
             controller.importQuestions();
             showMessage("Preguntas importadas exitosamente.");
-        } catch (QuestionBackupIOException e) {
+        } catch (QuestionBackupIOException | IRepositoryException e) {
             showErrorMessage("Error al importar las preguntas: " + e.getMessage());
         }
     }

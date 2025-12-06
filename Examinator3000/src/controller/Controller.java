@@ -4,12 +4,17 @@ import java.util.HashSet;
 
 import model.IRepositoryException;
 import model.QuestionBackupIOException;
+import model.QuestionCreatorException;
 import model.Model;
 import model.Question;
 import view.BaseView;
+
 public class Controller {
     private Model model;
     private BaseView view;
+    private HashSet<String> topics;
+    private int maxQuestions=0;
+    private String temaSeleccionado;
 
     public Controller(Model model, BaseView view) {
         this.model = model;
@@ -37,17 +42,34 @@ public class Controller {
     public void exportQuestions() throws QuestionBackupIOException, IRepositoryException {
         model.exportQuestions();
     }
-    public void importQuestions() throws QuestionBackupIOException {
+    public void importQuestions() throws QuestionBackupIOException, IRepositoryException {
         model.importQuestions();
     }
-    public HashSet<String> startExamMode() {
-        return model.getAvailableTopics();
+    public void startExamMode() {
+        topics=model.getAvailableTopics();
+        view.showTopics(topics);
     }
-    public int topicSelected(String temaSeleccionado) {
-        return model.getMaxQuestions(temaSeleccionado);
+    public void topicSelected(String temaSeleccionado) {
+        this.temaSeleccionado=temaSeleccionado;
+        maxQuestions = model.getMaxQuestions(temaSeleccionado);
+        view.askNumQuestions(maxQuestions);
     }
-    public void numQuestionsSelected(String temaSeleccionado, int numQuestions) {
+    public void numQuestionsSelected(int numQuestions) {
         model.configureExam(temaSeleccionado, numQuestions);
-        
+        questionLoop();
+    }
+    private void questionLoop() {
+        Question currentQuestion = model.getCurrentQuestion();
+        while (currentQuestion != null) {
+            view.showQuestion(currentQuestion);
+            int userAnswer = view.getUserAnswer();
+            int result = model.answerCurrentQuestion(userAnswer);
+            view.showFeedback(result);
+            currentQuestion = model.getCurrentQuestion();
+        }
+        view.showExamResult(model.getExamResult());
+    }
+    public void crearPreguntaAutomaticamente(String topic) throws QuestionCreatorException {
+        model.crearPreguntaAutomaticamente(topic);
     }
 }
