@@ -22,9 +22,21 @@ public class Controller {
         view.setController(this);
     }
     public void start() {
+            try {
+                model.loadState();
+                view.showMessage("Preguntas cargadas correctamente.");
+            } catch (Exception e) {
+                view.showErrorMessage("No se pudieron cargar las preguntas: " + e.getMessage());
+            }
         view.init();
     }
     public void end() {
+        try {
+            model.saveState();
+            view.showMessage("Preguntas guardadas correctamente.");
+        } catch (Exception e) {
+            view.showErrorMessage("No se pudieron guardar las preguntas: " + e.getMessage());
+        }
         view.end();
     }
     public void addQuestion(Question newQuestion) throws IRepositoryException {

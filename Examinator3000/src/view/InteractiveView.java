@@ -2,14 +2,12 @@ package view;
 import static com.coti.tools.Esdia.*;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.ArrayList;
 import model.Option;
 import model.Question;
 import model.ExamResult;
 import model.IRepositoryException;
 import model.QuestionBackupIOException;
-import model.QuestionCreator;
 import model.QuestionCreatorException;
 
 public class InteractiveView extends BaseView {

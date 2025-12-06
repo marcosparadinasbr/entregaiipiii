@@ -158,4 +158,10 @@ public class Model {
             throw new QuestionCreatorException("Error al añadir la pregunta al repositorio: " + e.getMessage(), e);
         }
     }
+    public void loadState() throws IRepositoryException {
+        repository.loadQuestions();
+    }
+    public void saveState() throws IRepositoryException {
+        repository.saveQuestions();
+    }
 }

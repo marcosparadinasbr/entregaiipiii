@@ -7,4 +7,6 @@ public interface IRepository {
     public void removeQuestion(Question q) throws IRepositoryException;
     public Question modifyQuestion(Question q) throws IRepositoryException;
     public ArrayList<Question> getAllQuestions() throws IRepositoryException;
+    public void loadQuestions() throws IRepositoryException;
+    public void saveQuestions() throws IRepositoryException;
 }
