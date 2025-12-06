@@ -66,7 +66,7 @@ public class Controller {
         maxQuestions = model.getMaxQuestions(temaSeleccionado);
         view.askNumQuestions(maxQuestions);
     }
-    public void numQuestionsSelected(int numQuestions) {
+    public void numQuestionsSelected(int numQuestions) throws IRepositoryException {
         model.configureExam(temaSeleccionado, numQuestions);
         questionLoop();
     }

@@ -14,6 +14,7 @@ public class InteractiveView extends BaseView {
     String[] opciones = {"a)", "b)", "c)", "d)"};
     ArrayList<Question> preguntas;
     private HashSet<String> temasDisponibles;
+    int questionNumber = 0;
     public void init() {
         showMenu();
     }
@@ -70,17 +71,17 @@ public class InteractiveView extends BaseView {
         System.err.println("Error: " + errorMessage);
     }
     private void addQuestion() {
-        String author = readString("Ingrese el autor de la pregunta: ");
+        String author = readString_ne("Ingrese el autor de la pregunta: ");
         HashSet<String> topics = new HashSet<>();
-        String topicsInput = readString("Ingrese los temas separados por comas: ");
+        String topicsInput = readString_ne("Ingrese los temas separados por comas: ");
         for (String topic : topicsInput.split(",")) {
             topics.add(topic.trim().toUpperCase());
         }
         String statement = readString("Ingrese el enunciado de la pregunta: ");
         ArrayList<Option> options = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            String optionText = readString("Ingrese el texto de la opción " + opciones[i] + ": ");
-            String rationale = readString("Ingrese la justificación de la opción " + opciones[i] + ": ");
+            String optionText = readString_ne("Ingrese el texto de la opción " + opciones[i] + ": ");
+            String rationale = readString_ne("Ingrese la justificación de la opción " + opciones[i] + ": ");
             boolean correct = yesOrNo("¿Es correcta la opción " + opciones[i] + "? ");
             options.add(new Option(optionText, rationale, correct));
         }
@@ -160,12 +161,12 @@ public class InteractiveView extends BaseView {
         if (temaSeleccionado.equalsIgnoreCase("todos")) {
             showMessage("Ha seleccionado todos los temas.");
         } else if (temasDisponibles.contains(temaSeleccionado.toUpperCase())) {
-            showMessage("Ha seleccionado el tema: " + temaSeleccionado);
+            showMessage("Ha seleccionado el tema: " + temaSeleccionado.toUpperCase());
         } else {
             showErrorMessage("Tema no válido. Volviendo al menú principal.");
             return;
         }
-        controller.topicSelected(temaSeleccionado);
+        controller.topicSelected(temaSeleccionado.toUpperCase());
     }
     public void askNumQuestions(int maxQuestions) {
         if (maxQuestions == 0) {
@@ -173,10 +174,13 @@ public class InteractiveView extends BaseView {
             return;
         }
         int numPreguntas = readInt("Ingrese el número de preguntas para el examen (máximo " + maxQuestions + "): ", 1, maxQuestions);
-        controller.numQuestionsSelected(numPreguntas);
+        try {
+            controller.numQuestionsSelected(numPreguntas);
+        } catch (IRepositoryException e) {
+            showErrorMessage("Error al configurar el examen: " + e.getMessage());
+        }
     }
     public void showQuestion(Question q) {
-        int questionNumber = 0;
         questionNumber = questionNumber + 1;
         showMessage("Pregunta " + questionNumber + ":");
         showMessage("Enunciado: " + q.getStatement());
@@ -245,17 +249,17 @@ public class InteractiveView extends BaseView {
         }
     }
     private void modificarPregunta(Question q) {
-        String author = readString("Ingrese el nuevo autor de la pregunta: ");
+        String author = readString_ne("Ingrese el nuevo autor de la pregunta: ");
         HashSet<String> topics = new HashSet<>();
-        String topicsInput = readString("Ingrese los nuevos temas separados por comas: ");
+        String topicsInput = readString_ne("Ingrese los nuevos temas separados por comas: ");
         for (String topic : topicsInput.split(",")) {
             topics.add(topic.trim().toUpperCase());
         }
-        String statement = readString("Ingrese el nuevo enunciado de la pregunta: ");
+        String statement = readString_ne("Ingrese el nuevo enunciado de la pregunta: ");
         ArrayList<Option> options = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            String optionText = readString("Ingrese el texto de la opción " + opciones[i] + ": ");
-            String rationale = readString("Ingrese la justificación de la opción " + opciones[i] + ": ");
+            String optionText = readString_ne("Ingrese el texto de la opción " + opciones[i] + ": ");
+            String rationale = readString_ne("Ingrese la justificación de la opción " + opciones[i] + ": ");
             boolean correct = yesOrNo("¿Es correcta la opción " + opciones[i] + "? (y/n): ");
             options.add(new Option(optionText, rationale, correct));
         }

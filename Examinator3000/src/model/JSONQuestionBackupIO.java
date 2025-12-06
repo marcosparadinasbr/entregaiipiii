@@ -18,10 +18,13 @@ public class JSONQuestionBackupIO implements QuestionBackupIO {
     public void exportQuestions(List<Question> questions) throws QuestionBackupIOException {
         Gson gson = new Gson();
         String json = gson.toJson(questions);
+        if (questions == null || questions.isEmpty()) {
+            throw new QuestionBackupIOException("No hay preguntas para exportar.");
+        }
         try {
             Files.write(ruta, json.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new QuestionBackupIOException("Error exporting questions to JSON", e);
+            throw new QuestionBackupIOException("Error exportando preguntas a JSON", e);
         }
     }
 
@@ -30,17 +33,20 @@ public class JSONQuestionBackupIO implements QuestionBackupIO {
         ArrayList<Question> questions = new ArrayList<>();
         Gson gson = new Gson();
         if (!Files.exists(ruta)) {
-            return questions;
+            throw new QuestionBackupIOException("No se encontró el archivo de respaldo JSON.");
         }
         try {
             String json = new String (Files.readAllBytes(ruta), StandardCharsets.UTF_8);
             Type questionListType = new TypeToken<List<Question>>(){}.getType();
             List<Question> lista = gson.fromJson(json, questionListType);
+            if (lista == null || lista.isEmpty()) {
+                throw new QuestionBackupIOException("No se encontraron preguntas en el archivo JSON.");
+            }
             if (lista != null) {
                 questions.addAll(lista);
             }
         } catch (IOException e) {
-            throw new QuestionBackupIOException("Error importing questions from JSON", e);
+            throw new QuestionBackupIOException("Error importando preguntas desde JSON", e);
         }
         return questions;
     }

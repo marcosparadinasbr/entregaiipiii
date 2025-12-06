@@ -98,7 +98,7 @@ public class Model {
         }
         return maxQuestions;
     }
-    public void configureExam(String topic, int numQuestions) {
+    public void configureExam(String topic, int numQuestions) throws IRepositoryException {
         int count=0;
         exam = new ArrayList<>();
         currentQuestionIndex=0;
@@ -109,8 +109,11 @@ public class Model {
         ArrayList<Question> questions;
         try {
             questions = repository.getAllQuestions();
+            if (questions.size() < numQuestions) {
+                throw new IllegalArgumentException("No hay suficientes preguntas en el repositorio.");
+            }
         } catch (IRepositoryException e) {
-            return;
+            throw new IRepositoryException("No se pudieron obtener las preguntas del repositorio: " + e.getMessage());
         }
         if (topic.equalsIgnoreCase("todos")) {
             while (count < numQuestions) {
@@ -120,7 +123,7 @@ public class Model {
         }
         else {
             for (Question q : questions) {
-                if (q.getTopics().contains(topic) && count < numQuestions) {
+                if (q.getTopics().contains(topic.toUpperCase()) && count < numQuestions) {
                     exam.add(q);
                     count++;
                 }

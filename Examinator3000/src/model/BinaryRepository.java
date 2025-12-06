@@ -17,6 +17,9 @@ public class BinaryRepository implements IRepository {
     }
     public void saveQuestions() throws IRepositoryException {
         ObjectOutputStream oos = null;
+        if (questions == null || questions.isEmpty()) {
+            throw new IRepositoryException("No hay preguntas para guardar.");
+        }
         try {
             oos = new ObjectOutputStream(Files.newOutputStream(ruta));
             oos.writeObject(questions);
@@ -42,6 +45,9 @@ public class BinaryRepository implements IRepository {
         try {
             ois = new ObjectInputStream(Files.newInputStream(ruta));
             questions = (ArrayList<Question>) ois.readObject();
+            if (questions == null || questions.isEmpty()) {
+                throw new IRepositoryException("No se encontraron preguntas en el archivo.");
+            }
         } catch (IOException | ClassNotFoundException e) {
             throw new IRepositoryException("Error al cargar las preguntas: " + e.getMessage());
         }
