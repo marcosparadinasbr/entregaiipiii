@@ -16,27 +16,42 @@ public class GeminiQuestionCreator implements QuestionCreator {
     public GeminiQuestionCreator(String API_KEY, String modelId) {
         this.API_KEY = API_KEY;
         this.modelId = modelId;
-        config = GenAiConfig.fromEnv(modelId);
+        this.config = GenAiConfig.forGemini(modelId, API_KEY);
     }
     public String getQuestionCreatorDescription(){
         return questionCreatorDescription;
     }
     public Question createQuestion(String topic) throws QuestionCreatorException {
-        GenAiConfig.setSilentMode();
+        GenAiConfig.setDevelopmentMode();
         try (GenAiFacade genai = new GenAiFacade(config)) {
-            String prompt = "Crea una pregunta tipo test en español sobre el tema: " + topic + ".\n" +
-            """
-            Requisitos obligatorios:
-            - EXACTAMENTE 4 opciones.
-            - Cada opción debe tener:
-                * "text": texto de la opción
-                * "rationale": explicación del porqué
-                * "correct": true/false
-            - Debe haber EXACTAMENTE UNA opción correcta.
-            - El campo "author" debe ser "Gemini".
-            - El campo "topics" debe ser una lista con un único elemento: " + topic.toUpperCase() + " en mayúsculas.
-            - El campo "statement" debe contener la pregunta.
-            """;
+            String prompt = """
+            Genera **únicamente un JSON válido** compatible con el siguiente esquema:
+
+            {
+            "author": "Gemini",
+            "topics": ["%s"],
+            "statement": "Texto de la pregunta en español",
+            "options": [
+                {
+                "text": "Texto de la opción",
+                "rationale": "Justificación de la opción",
+                "correct": boolean
+                }
+            ]
+            }
+
+            Reglas:
+            - EXACTAMENTE 4 opciones
+            - EXACTAMENTE 1 opción correcta
+            - El campo "topics" debe ser una lista de Strings
+            - El campo "correct" debe ser un booleano (true/false), NO un texto
+            - No incluyas texto antes ni después del JSON
+            - No incluyas comentarios
+            - El campo "author" debe ser "Gemini"
+
+            Tema: %s
+            """.formatted(topic.toUpperCase(), topic);
+
             Schema schema = SimpleSchemas.from(QuestionDTO.class);
             QuestionDTO questionGenerated = genai.generateJson(prompt, schema, QuestionDTO.class);
             HashSet<String> realTopics = new HashSet<>(questionGenerated.topics);

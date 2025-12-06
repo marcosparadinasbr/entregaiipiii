@@ -23,7 +23,7 @@ public class App {
             apiKey = args[2];
         }
         if (apiKey != null) {
-            questionCreators.add(new GeminiQuestionCreator(modelId, apiKey));
+            questionCreators.add(new GeminiQuestionCreator(apiKey, modelId));
         }
         Model model = new Model(repository, questionBackupIO, questionCreators);
         BaseView view = new InteractiveView();
