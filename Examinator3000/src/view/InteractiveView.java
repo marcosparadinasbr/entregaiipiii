@@ -61,7 +61,7 @@ public class InteractiveView extends BaseView {
         } while (!salir); // Replace with actual condition
     }
     public void end() {
-        showMessage("Exiting Interactive View. Goodbye!");
+        showMessage("Saliendo de Examinator 3000. ¡Hasta luego!");
     }
     public void showMessage(String message) {
         System.out.println(message);
@@ -85,7 +85,6 @@ public class InteractiveView extends BaseView {
             options.add(new Option(optionText, rationale, correct));
         }
         Question newQuestion = new Question(author, topics, statement, options);
-        showMessage("Pregunta creada exitosamente.");
         try {
             controller.addQuestion(newQuestion);
             showMessage("Pregunta añadida al repositorio exitosamente.");
@@ -260,9 +259,12 @@ public class InteractiveView extends BaseView {
             boolean correct = yesOrNo("¿Es correcta la opción " + opciones[i] + "? (y/n): ");
             options.add(new Option(optionText, rationale, correct));
         }
-        Question modifiedQuestion = new Question(author, topics, statement, options);
+        q.setAuthor(author);
+        q.setTopics(topics);
+        q.setStatement(statement);
+        q.setOptions(options);
         try {
-            controller.modifyQuestion(modifiedQuestion);
+            controller.modifyQuestion(q);
             showMessage("Pregunta modificada exitosamente.");
         } catch (IRepositoryException e) {
             showErrorMessage("Error al modificar la pregunta: " + e.getMessage());

@@ -11,6 +11,7 @@ public class Question implements Serializable{
     HashSet<String> topics; // One or more topics
     String statement; // Question statement
     List<Option> options; // 4 options
+    private static final long serialVersionUID = 1L;
 
     public Question(String author, HashSet<String> topics, String statement, List<Option> options) {
         this.id = UUID.randomUUID();
@@ -33,5 +34,17 @@ public class Question implements Serializable{
     }
     public List<Option> getOptions() {
         return options;
+    }
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+    public void setTopics(HashSet<String> topics) {
+        this.topics = topics;
+    }
+    public void setStatement(String statement) {
+        this.statement = statement;
+    }
+    public void setOptions(List<Option> options) {
+        this.options = options;
     }
 }

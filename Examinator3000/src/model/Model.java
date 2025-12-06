@@ -24,6 +24,18 @@ public class Model {
     }
 
     public Question addQuestion(Question newQuestion) throws IRepositoryException {
+        long correctCount = newQuestion.getOptions()
+                            .stream()
+                            .filter(Option::isCorrect)
+                            .count();
+
+        if (correctCount == 0) {
+            throw new IRepositoryException("La pregunta debe tener al menos una opción correcta.");
+        }
+
+        if (correctCount > 1) {
+            throw new IRepositoryException("La pregunta solo puede tener UNA opción correcta.");
+        }
         return repository.addQuestion(newQuestion);
     }
 
@@ -77,7 +89,10 @@ public class Model {
             return 0;
         }
         for (Question q : questions) {
-            if (q.getTopics().contains(temaSeleccionado)) {
+            if (temaSeleccionado.equalsIgnoreCase("todos")) {
+                maxQuestions++;
+            } else
+            if (q.getTopics().contains(temaSeleccionado.toUpperCase())) {
                 maxQuestions++;
             }
         }
@@ -121,7 +136,7 @@ public class Model {
     }
     public int answerCurrentQuestion(Integer answerIndex) {
         Question q = exam.get(currentQuestionIndex);
-        if (answerIndex == null) {
+        if (answerIndex == -1) {
             skipped++;
             currentQuestionIndex++;
             return 0;
