@@ -7,15 +7,11 @@ import java.util.HashSet;
 import com.google.genai.types.Schema;
 
 public class GeminiQuestionCreator implements QuestionCreator {
-    private final String API_KEY;
-    private final String modelId;
     private GenAiConfig config;
     private final String questionCreatorDescription = "Creador de preguntas basado en Gemini AI de Google.";
     GenAiFacade genai;
 
     public GeminiQuestionCreator(String API_KEY, String modelId) {
-        this.API_KEY = API_KEY;
-        this.modelId = modelId;
         this.config = GenAiConfig.forGemini(modelId, API_KEY);
     }
     public String getQuestionCreatorDescription(){
