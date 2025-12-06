@@ -1,5 +1,9 @@
 package model;
 import es.usal.genai.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import com.google.genai.types.Schema;
 
 public class GeminiQuestionCreator implements QuestionCreator {
@@ -20,9 +24,32 @@ public class GeminiQuestionCreator implements QuestionCreator {
     public Question createQuestion(String topic) throws QuestionCreatorException {
         GenAiConfig.setSilentMode();
         try (GenAiFacade genai = new GenAiFacade(config)) {
-            String prompt = "Crea una en español pregunta tipo test sobre el siguiente tema: " + topic + ". La pregunta debe ser clara y concisa. Debe tener 4 respuestas posibles, de las cuales solo una es correcta. Además, debe incluir un campo 'explanation' que justifique por qué la respuesta correcta es la adecuada. El autor de la pregunta debe ser 'Gemini AI'.";
-            Schema schema = SimpleSchemas.from(Question.class);
-            Question question = genai.generateJson(prompt, schema, Question.class);
+            String prompt = "Crea una pregunta tipo test en español sobre el tema: " + topic + ".\n" +
+            """
+            Requisitos obligatorios:
+            - EXACTAMENTE 4 opciones.
+            - Cada opción debe tener:
+                * "text": texto de la opción
+                * "rationale": explicación del porqué
+                * "correct": true/false
+            - Debe haber EXACTAMENTE UNA opción correcta.
+            - El campo "author" debe ser "Gemini".
+            - El campo "topics" debe ser una lista con un único elemento: " + topic.toUpperCase() + " en mayúsculas.
+            - El campo "statement" debe contener la pregunta.
+            """;
+            Schema schema = SimpleSchemas.from(QuestionDTO.class);
+            QuestionDTO questionGenerated = genai.generateJson(prompt, schema, QuestionDTO.class);
+            HashSet<String> realTopics = new HashSet<>(questionGenerated.topics);
+            ArrayList<Option> realOptions = new ArrayList<>();
+            for (OptionDTO o : questionGenerated.options) {
+                realOptions.add(new Option(o.text, o.rationale, o.correct));
+            }
+            Question question = new Question(
+                questionGenerated.author,
+                realTopics,
+                questionGenerated.statement,
+                realOptions
+            );
             return question;
         } catch (Exception e) {
             throw new QuestionCreatorException("Error creating question: " + e.getMessage(), e);
