@@ -13,9 +13,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class JSONQuestionBackupIO implements QuestionBackupIO {
-    Path ruta = Paths.get(System.getProperty("user.home"), "backup.json");
+    
     @Override
-    public void exportQuestions(List<Question> questions) throws QuestionBackupIOException {
+    public void exportQuestions(List<Question> questions, String filename) throws QuestionBackupIOException {
+        Path ruta = Paths.get(System.getProperty("user.home"), filename);
         Gson gson = new Gson();
         String json = gson.toJson(questions);
         if (questions == null || questions.isEmpty()) {
@@ -29,9 +30,10 @@ public class JSONQuestionBackupIO implements QuestionBackupIO {
     }
 
     @Override
-    public ArrayList<Question> importQuestions() throws QuestionBackupIOException {
+    public ArrayList<Question> importQuestions(String filename) throws QuestionBackupIOException {
         ArrayList<Question> questions = new ArrayList<>();
         Gson gson = new Gson();
+        Path ruta = Paths.get(System.getProperty("user.home"), filename);
         if (!Files.exists(ruta)) {
             throw new QuestionBackupIOException("No se encontró el archivo de respaldo JSON.");
         }

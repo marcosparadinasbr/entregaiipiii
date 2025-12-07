@@ -49,11 +49,11 @@ public class Model {
     public void removeQuestion(Question q) throws IRepositoryException {
         repository.removeQuestion(q);
     }
-    public void exportQuestions() throws QuestionBackupIOException, IRepositoryException {
-        backupHandler.exportQuestions(repository.getAllQuestions());
+    public void exportQuestions(String filename) throws QuestionBackupIOException, IRepositoryException {
+        backupHandler.exportQuestions(repository.getAllQuestions(), filename);
     }
-    public void importQuestions() throws QuestionBackupIOException, IRepositoryException {
-        ArrayList<Question> importedQuestions = (ArrayList<Question>) backupHandler.importQuestions();
+    public void importQuestions(String filename) throws QuestionBackupIOException, IRepositoryException {
+        ArrayList<Question> importedQuestions = (ArrayList<Question>) backupHandler.importQuestions(filename);
         List<Question> existing = repository.getAllQuestions();
         HashSet<UUID> existingIds = new HashSet<>();
         for (Question q : existing) {
@@ -137,20 +137,40 @@ public class Model {
         }
         return exam.get(currentQuestionIndex);
     }
-    public int answerCurrentQuestion(Integer answerIndex) {
+    public String answerCurrentQuestion(Integer answerIndex) {
         Question q = exam.get(currentQuestionIndex);
         if (answerIndex == -1) {
             skipped++;
             currentQuestionIndex++;
-            return 0;
+            return String.format("Pregunta saltada. La respuesta correcta era: %s. Explicación: %s",
+                    q.getOptions().stream()
+                     .filter(Option::isCorrect)
+                     .findFirst()
+                     .map(Option::getText),
+                    q.getOptions().stream()
+                     .filter(Option::isCorrect)
+                     .findFirst()
+                     .map(Option::getRationale));
         } else if (q.getOptions().get(answerIndex).isCorrect()) {
             correct++;
             currentQuestionIndex++;
-            return 1;
+            return String.format("¡Respuesta correcta! Explicación: %s",
+                    q.getOptions().stream()
+                     .filter(Option::isCorrect)
+                     .findFirst()
+                     .map(Option::getRationale));
         } else {
             wrong++;
             currentQuestionIndex++;
-            return -1;
+            return String.format("Respuesta incorrecta. La respuesta correcta era: %s. Explicación: %s",
+                    q.getOptions().stream()
+                     .filter(Option::isCorrect)
+                     .findFirst()
+                     .map(Option::getText),
+                    q.getOptions().stream()
+                     .filter(Option::isCorrect)
+                     .findFirst()
+                     .map(Option::getRationale));
         }
         
     }

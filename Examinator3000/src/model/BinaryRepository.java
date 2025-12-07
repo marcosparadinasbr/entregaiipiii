@@ -17,7 +17,7 @@ public class BinaryRepository implements IRepository {
     }
     public void saveQuestions() throws IRepositoryException {
         ObjectOutputStream oos = null;
-        if (questions == null || questions.isEmpty()) {
+        if (questions == null) {
             throw new IRepositoryException("No hay preguntas para guardar.");
         }
         try {

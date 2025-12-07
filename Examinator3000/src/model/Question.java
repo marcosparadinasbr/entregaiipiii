@@ -11,6 +11,7 @@ public class Question implements Serializable{
     HashSet<String> topics; // One or more topics
     String statement; // Question statement
     List<Option> options; // 4 options
+    private long createdAt; // Timestamp of creation
     private static final long serialVersionUID = 1L;
 
     public Question(String author, HashSet<String> topics, String statement, List<Option> options) {
@@ -19,6 +20,7 @@ public class Question implements Serializable{
         this.topics = topics;
         this.statement = statement;
         this.options = options;
+        this.createdAt = System.currentTimeMillis();
     }
     public UUID getId() {
         return id;
@@ -34,6 +36,9 @@ public class Question implements Serializable{
     }
     public List<Option> getOptions() {
         return options;
+    }
+    public long getCreatedAt() {
+        return createdAt;
     }
     public void setAuthor(String author) {
         this.author = author;

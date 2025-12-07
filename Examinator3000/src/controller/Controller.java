@@ -51,11 +51,11 @@ public class Controller {
     public void removeQuestion(Question q) throws IRepositoryException {
         model.removeQuestion(q);
     }
-    public void exportQuestions() throws QuestionBackupIOException, IRepositoryException {
-        model.exportQuestions();
+    public void exportQuestions(String filename) throws QuestionBackupIOException, IRepositoryException {
+        model.exportQuestions(filename);
     }
-    public void importQuestions() throws QuestionBackupIOException, IRepositoryException {
-        model.importQuestions();
+    public void importQuestions(String filename) throws QuestionBackupIOException, IRepositoryException {
+        model.importQuestions(filename);
     }
     public void startExamMode() {
         topics=model.getAvailableTopics();
@@ -75,7 +75,7 @@ public class Controller {
         while (currentQuestion != null) {
             view.showQuestion(currentQuestion);
             int userAnswer = view.getUserAnswer();
-            int result = model.answerCurrentQuestion(userAnswer);
+            String result = model.answerCurrentQuestion(userAnswer);
             view.showFeedback(result);
             currentQuestion = model.getCurrentQuestion();
         }
@@ -84,4 +84,7 @@ public class Controller {
     public void crearPreguntaAutomaticamente(String topic) throws QuestionCreatorException {
         model.crearPreguntaAutomaticamente(topic);
     }
-}
+    public HashSet<String> getTopicsSet() {
+        return model.getAvailableTopics();
+    }
+}   

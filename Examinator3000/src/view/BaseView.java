@@ -19,6 +19,6 @@ public abstract class BaseView {
     public abstract void askNumQuestions(int maxQuestions);
     public abstract int getUserAnswer();
     public abstract void showQuestion(Question q);
-    public abstract void showFeedback(int result);
+    public abstract void showFeedback(String result);
     public abstract void showExamResult(ExamResult result);
 }

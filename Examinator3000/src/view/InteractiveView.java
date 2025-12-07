@@ -2,7 +2,12 @@ package view;
 import static com.coti.tools.Esdia.*;
 
 import java.util.HashSet;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
+
 import model.Option;
 import model.Question;
 import model.ExamResult;
@@ -95,6 +100,7 @@ public class InteractiveView extends BaseView {
     }
     private void listarPreguntas() {
         preguntas = new ArrayList<>();
+        int numPregunta = 0;
         try {
             preguntas = controller.getAllQuestions();
         } catch (IRepositoryException e) {
@@ -103,12 +109,53 @@ public class InteractiveView extends BaseView {
         if (preguntas.isEmpty()) {
                 showMessage("No hay preguntas en el repositorio.");
         } else {
+            showMessage("¿Desea filtrar por tema o ver por fecha de creación?");
+            showMessage("1. Filtrar por tema");
+            showMessage("2. Ver por fecha de creación");
+            int filtro = readInt("Seleccione una opción: ", 1, 2);
+
+            if (filtro == 1) {
+                HashSet<String> temas = controller.getTopicsSet();
+                showMessage("Temas disponibles:");
+                for (String t : temas) {
+                    showMessage("- " + t);
+                }
+                String temaFiltro = readString_ne("Ingrese uno de los temas anteriores: ").toUpperCase();
+                ArrayList<Question> preguntasFiltradas = new ArrayList<>();
+                for (Question q : preguntas) {
+                    if (q.getTopics().contains(temaFiltro)) {
+                        preguntasFiltradas.add(q);
+                    }
+                }
+                if (preguntasFiltradas.isEmpty()) {
+                    showMessage("No hay preguntas para el tema seleccionado.");
+                    return;
+                }
+                preguntas = preguntasFiltradas;
+            } else if (filtro == 2) {
+                preguntas.sort(Comparator.comparingLong(Question::getCreatedAt));
+            }
             for (int i = 0; i < preguntas.size(); i++) {
                 showMessage("Pregunta " + (i + 1) + ": " + preguntas.get(i).getStatement());
+                showMessage("Opciones:");
+                ArrayList<Option> opts = (ArrayList<Option>) preguntas.get(i).getOptions();
+                for (int j = 0; j < opts.size(); j++) {
+                    showMessage("  " + opciones[j] + " " + opts.get(j).getText());
+                }
+                showMessage("Temas: " + String.join(", ", preguntas.get(i).getTopics()));
+                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                Instant instant = Instant.ofEpochMilli(preguntas.get(i).getCreatedAt());
+                String fecha = fmt.format(instant.atZone(ZoneId.systemDefault()));
+                showMessage("Fecha de creación: " + fecha);
+                showMessage("-----------------------");
             }
             boolean resp=yesOrNo("Desea ver detalle de alguna de las preguntas? (y/n): ");
             if (resp) {
-                int numPregunta = readInt("Ingrese el número de la pregunta a detallar: ", 1, preguntas.size());
+                if (preguntas.size()>1) {
+                    numPregunta = readInt("Ingrese el número de la pregunta a detallar: ", 1, preguntas.size());
+                } else {
+                    numPregunta = 1;
+                }
                 Question q = preguntas.get(numPregunta - 1);
                 showMessage("Autor: " + q.getAuthor());
                 showMessage("Temas: " + String.join(", ", q.getTopics()));
@@ -214,22 +261,20 @@ public class InteractiveView extends BaseView {
         return answerIndex;
     }
     private void exportarPreguntas() {
+        String nombreFichero= readString_ne("Ingrese el nombre del fichero para exportar las preguntas: ");
+        if (!nombreFichero.endsWith(".json")) {
+            nombreFichero += ".json";
+        }
         showMessage("Exportando preguntas...");
         try {
-            controller.exportQuestions();
+            controller.exportQuestions(nombreFichero);
             showMessage("Preguntas exportadas exitosamente.");
         } catch (QuestionBackupIOException | IRepositoryException e) {
             showErrorMessage("Error al exportar las preguntas: " + e.getMessage());
         }
     }
-    public void showFeedback(int result) {
-        if (result == 1) {
-            showMessage("Respuesta correcta.");
-        } else if (result == -1) {
-            showMessage("Respuesta incorrecta.");
-        } else {
-            showMessage("Pregunta omitida.");
-        }
+    public void showFeedback(String result) {
+        showMessage(result);
     }
     public void showExamResult(ExamResult result) {
         showMessage("Resultado del examen:");
@@ -241,8 +286,12 @@ public class InteractiveView extends BaseView {
         showMessage("Nota final: " + String.format("%.2f", result.getGrade()));
     }
     private void importarPreguntas() {
+        String nombreFichero= readString_ne("Ingrese el nombre del fichero para importar las preguntas: ");
+        if (!nombreFichero.endsWith(".json")) {
+            nombreFichero += ".json";
+        }
         try {
-            controller.importQuestions();
+            controller.importQuestions(nombreFichero);
             showMessage("Preguntas importadas exitosamente.");
         } catch (QuestionBackupIOException | IRepositoryException e) {
             showErrorMessage("Error al importar las preguntas: " + e.getMessage());
