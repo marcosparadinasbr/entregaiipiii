@@ -25,7 +25,7 @@ public class GeminiQuestionCreator implements QuestionCreator {
 
             {
             "author": "Gemini",
-            "topics": ["%s"],
+            "topics": ["%s"] (en mayúsculas),
             "statement": "Texto de la pregunta en español",
             "options": [
                 {
@@ -44,6 +44,7 @@ public class GeminiQuestionCreator implements QuestionCreator {
             - No incluyas texto antes ni después del JSON
             - No incluyas comentarios
             - El campo "author" debe ser "Gemini"
+            - La pregunta y las opciones deben estar en español
 
             Tema: %s
             """.formatted(topic.toUpperCase(), topic);

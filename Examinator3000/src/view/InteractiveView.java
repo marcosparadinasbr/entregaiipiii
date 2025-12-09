@@ -188,7 +188,7 @@ public class InteractiveView extends BaseView {
         try {
             String topic = readString("Ingrese el tema para la pregunta automática: ");
             showMessage("Creando pregunta automáticamente...");
-            controller.crearPreguntaAutomaticamente(topic);
+            controller.crearPreguntaAutomaticamente(topic.toUpperCase());
             showMessage("Pregunta creada y añadida al repositorio exitosamente.");
         } catch (QuestionCreatorException e) {
             showErrorMessage("Error al crear la pregunta automáticamente: " + e.getMessage());
