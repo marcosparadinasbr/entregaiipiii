@@ -18,7 +18,7 @@ public class GeminiQuestionCreator implements QuestionCreator {
         return questionCreatorDescription;
     }
     public Question createQuestion(String topic) throws QuestionCreatorException {
-        GenAiConfig.setDevelopmentMode();
+        GenAiConfig.setSilentMode();
         try (GenAiFacade genai = new GenAiFacade(config)) {
             String prompt = """
             Genera **únicamente un JSON válido** compatible con el siguiente esquema:

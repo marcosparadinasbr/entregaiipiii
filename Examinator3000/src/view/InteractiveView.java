@@ -149,7 +149,7 @@ public class InteractiveView extends BaseView {
                 showMessage("Fecha de creación: " + fecha);
                 showMessage("-----------------------");
             }
-            boolean resp=yesOrNo("Desea ver detalle de alguna de las preguntas? (y/n): ");
+            boolean resp=yesOrNo("Desea ver detalle de alguna de las preguntas");
             if (resp) {
                 if (preguntas.size()>1) {
                     numPregunta = readInt("Ingrese el número de la pregunta a detallar: ", 1, preguntas.size());
@@ -309,7 +309,7 @@ public class InteractiveView extends BaseView {
         for (int i = 0; i < 4; i++) {
             String optionText = readString_ne("Ingrese el texto de la opción " + opciones[i] + ": ");
             String rationale = readString_ne("Ingrese la justificación de la opción " + opciones[i] + ": ");
-            boolean correct = yesOrNo("¿Es correcta la opción " + opciones[i] + "? (y/n): ");
+            boolean correct = yesOrNo("¿Es correcta la opción " + opciones[i] + "");
             options.add(new Option(optionText, rationale, correct));
         }
         q.setAuthor(author);

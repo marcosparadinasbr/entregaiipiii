@@ -1,0 +1,9 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "Examinator3000/lib/biblioteca11.jar",
+        "Examinator3000/lib/genai-fatjar-1.0.0.jar",
+        "Examinator3000/lib/gson-2.10.1.jar",
+        "Examinator3000/lib/jadapter-for-native-tts-0.12.0.jar"
+    ]
+}

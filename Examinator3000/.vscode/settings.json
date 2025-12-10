@@ -1,8 +1,13 @@
 {
-    "java.project.sourcePaths": ["src"],
+    "java.project.sourcePaths": [
+        "src"
+    ],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
-        "lib/**/*.jar"
+        "/Users/marcos/Documents/Universidad/3º de Carrera/1º Cuatrimestre/Programación III/entregaiipiii/Examinator3000/lib/genai-fatjar-1.0.0.jar",
+        "/Users/marcos/Documents/Universidad/3º de Carrera/1º Cuatrimestre/Programación III/entregaiipiii/Examinator3000/lib/jadapter-for-native-tts-0.12.0.jar",
+        "/Users/marcos/Documents/Universidad/3º de Carrera/1º Cuatrimestre/Programación III/entregaiipiii/Examinator3000/lib/biblioteca11.jar",
+        "/Users/marcos/Documents/Universidad/3º de Carrera/1º Cuatrimestre/Programación III/entregaiipiii/Examinator3000/lib/gson-2.10.1.jar"
     ],
     "java.compile.nullAnalysis.mode": "automatic"
 }

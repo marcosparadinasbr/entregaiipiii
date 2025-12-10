@@ -139,38 +139,28 @@ public class Model {
     }
     public String answerCurrentQuestion(Integer answerIndex) {
         Question q = exam.get(currentQuestionIndex);
+        Option correctOption = q.getOptions()
+                                 .stream()
+                                 .filter(Option::isCorrect)
+                                 .findFirst()
+                                 .orElse(null);
         if (answerIndex == -1) {
             skipped++;
             currentQuestionIndex++;
             return String.format("Pregunta saltada. La respuesta correcta era: %s. Explicación: %s",
-                    q.getOptions().stream()
-                     .filter(Option::isCorrect)
-                     .findFirst()
-                     .map(Option::getText),
-                    q.getOptions().stream()
-                     .filter(Option::isCorrect)
-                     .findFirst()
-                     .map(Option::getRationale));
+                    correctOption.getText(),
+                    correctOption.getRationale());
         } else if (q.getOptions().get(answerIndex).isCorrect()) {
             correct++;
             currentQuestionIndex++;
             return String.format("¡Respuesta correcta! Explicación: %s",
-                    q.getOptions().stream()
-                     .filter(Option::isCorrect)
-                     .findFirst()
-                     .map(Option::getRationale));
+                    correctOption.getRationale());  
         } else {
             wrong++;
             currentQuestionIndex++;
             return String.format("Respuesta incorrecta. La respuesta correcta era: %s. Explicación: %s",
-                    q.getOptions().stream()
-                     .filter(Option::isCorrect)
-                     .findFirst()
-                     .map(Option::getText),
-                    q.getOptions().stream()
-                     .filter(Option::isCorrect)
-                     .findFirst()
-                     .map(Option::getRationale));
+                    correctOption.getText(),
+                    correctOption.getRationale());
         }
         
     }
